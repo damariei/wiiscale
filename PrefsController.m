@@ -10,30 +10,35 @@
 
 
 @implementation PrefsController
+@synthesize addOrDeleteBtn;
+@synthesize newUser;
+@synthesize didCancel;
+@synthesize userText;
 
-
-- (void)awakeFromNib {
-
-	NSString *username = [[NSUserDefaults standardUserDefaults] stringForKey:@"username"];
-	NSString *password = [[NSUserDefaults standardUserDefaults] stringForKey:@"password"];
-	
-	if(!!username.length)
-		[userText setStringValue:username];
-	if(!!password.length)
-		[passText setStringValue:password];
+- (id)init {
+    if ([super init]) {
+        newUser = true;
+        didCancel = false;
+    }
+    return self;
 }
 
-- (IBAction)closePrefs:(id)sender {
-	[NSApp endSheet:configureSheet];
+- (IBAction)cancelBtnClicked:(id)sender {
+    didCancel = true;
+    [[NSUserDefaults standardUserDefaults] setValue:@"" forKey:@"username"];
+    [NSApp endSheet:configureSheet];
 }
 
-- (IBAction)saveAndClosePrefs:(id)sender {
-	
-	[[NSUserDefaults standardUserDefaults] setValue:[userText stringValue] forKey:@"username"];
-	[[NSUserDefaults standardUserDefaults] setValue:[passText stringValue] forKey:@"password"];
+- (IBAction)addOrDeleteBtnClicked:(id)sender {
+    didCancel = false;
+    if (newUser) {
+        [[NSUserDefaults standardUserDefaults] setValue:[userText stringValue] forKey:@"username"];
+    } else {
+        [[NSUserDefaults standardUserDefaults] setValue:@"" forKey:@"username"];
+    }
+    
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	[NSApp endSheet:configureSheet];
 }
-
 @end

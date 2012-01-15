@@ -14,9 +14,19 @@
     IBOutlet NSWindow* mainWindow;
 
 	IBOutlet NSTextField* userText;
-	IBOutlet NSSecureTextField* passText;
+    NSButton *addOrDeleteBtn;
+    
+    BOOL newUser;
+    BOOL didCancel;
 }
-- (IBAction)closePrefs:(id)sender;
-- (IBAction)saveAndClosePrefs:(id)sender;
+
+@property (nonatomic) BOOL newUser;
+@property (nonatomic) BOOL didCancel;
+@property (nonatomic, retain) NSTextField *userText;
+
+// IB Outlets/Actions
+- (IBAction)cancelBtnClicked:(id)sender;
+- (IBAction)addOrDeleteBtnClicked:(id)sender;
+@property (assign) IBOutlet NSButton *addOrDeleteBtn;
 
 @end

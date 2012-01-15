@@ -6,18 +6,58 @@
 
 - (IBAction)showPrefs:(id)sender
 {
-	[NSApp beginSheet:prefs modalForWindow:self.window modalDelegate:self didEndSelector:@selector(didEndSheet:returnCode:contextInfo:) contextInfo:nil];	
+    
+    
+    if ([profilesPopUp indexOfSelectedItem] < [profilesPopUp itemArray].count-2) {
+        [[NSUserDefaults standardUserDefaults] setValue:profilesPopUp.selectedItem.title forKey:@"username"];
+        prefsController.newUser = false;
+    } else {
+        [prefsController.userText setStringValue:@""];
+        [profilesPopUp selectItemAtIndex:0];
+        prefsController.newUser = true;
+    }
+    
+    NSString *username;
+    
+    if (prefsController.newUser) {
+        username = @"";
+        prefsController.addOrDeleteBtn.title = @"Add";
+        [prefsController.userText setEnabled:true];
+    } else {
+        username = [[NSUserDefaults standardUserDefaults] stringForKey:@"username"];
+        prefsController.addOrDeleteBtn.title = @"Delete";
+        [prefsController.userText setEnabled:false];
+    }
+    
+	if(username.length)
+		[prefsController.userText setStringValue:username];
+    
+	[NSApp beginSheet:prefs modalForWindow:self.window modalDelegate:self didEndSelector:@selector(didEndSheet:returnCode:contextInfo:) contextInfo:nil];
 }
 
 - (void)didEndSheet:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo
 {
 	[sheet orderOut:self];
 	
-	NSString *username = [[NSUserDefaults standardUserDefaults] stringForKey:@"username"];
-	NSString *password = [[NSUserDefaults standardUserDefaults] stringForKey:@"password"];
-	
-	if(username.length && password.length)
-		[self performSelector:@selector(loginGoogleHealth:) withObject:self afterDelay:0.0f];	
+    if (!prefsController.didCancel) {
+        NSString *username = [[NSUserDefaults standardUserDefaults] stringForKey:@"username"];
+        
+        if (username.length) {
+            [profilesPopUp insertItemWithTitle:username atIndex:0];
+            [profilesPopUp selectItemAtIndex:0];
+            [profiles addObject:username];
+        } else {
+            [profilesPopUp removeItemAtIndex:[profilesPopUp indexOfSelectedItem]];
+            [profiles removeObject:[prefsController.userText stringValue]];
+        }
+        
+        if ([profilesPopUp itemArray].count>2) {
+            [profileButton setEnabled:true];
+        } else {
+            [profileButton setEnabled:false];
+        }
+    }
+    
 }
 
 #pragma mark Window
@@ -28,27 +68,21 @@
     if (self) {
 		
 		weightSampleIndex = 0;
-				
-		service = [[GDataServiceGoogleHealth alloc] init];
-		[service setUserAgent:@"FordParsons-WiiScaleMac-1.0"];
-		[service setShouldCacheDatedData:YES];
-		[service setServiceShouldFollowNextLinks:YES];
-		
-		NSString *username = [[NSUserDefaults standardUserDefaults] stringForKey:@"username"];
-		NSString *password = [[NSUserDefaults standardUserDefaults] stringForKey:@"password"];
-		
-		if(username.length && password.length)
-			[self performSelector:@selector(loginGoogleHealth:) withObject:self afterDelay:0.0f];
-		else
-			[self performSelector:@selector(showPrefs:) withObject:self afterDelay:0.0f];
-		
+        
+        // Load TextStrings.plist
+        NSString* plistPath = [[NSBundle mainBundle] pathForResource:@"TextStrings" ofType:@"plist"];
+        strings = [[NSDictionary dictionaryWithContentsOfFile:plistPath] copy];
+        
+        // Load Stored Profiles
+        profiles = [[NSMutableArray alloc] 
+                    initWithArray:[self getFromStorage]];
+            
 		[self performSelectorInBackground:@selector(showMessage) withObject:nil];
 		
 		if(!discovery) {
 			[self performSelector:@selector(doDiscovery:) withObject:self afterDelay:0.0f];
 		}
-		
-		mailSent = [[NSSound alloc] initWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"mail-sent" ofType:@"aiff"] byReference:NO];
+    
 		
     }
     return self;
@@ -57,13 +91,23 @@
 - (void)dealloc
 {
 	[super dealloc];
-	[mailSent release];
-	[service release];
-	[profiles release];
+	[profiles dealloc];
 }
 
 - (void)awakeFromNib {
-
+    
+    // Init. Profiles Popup
+    for (int i=0; i < [profiles count]; i++)
+        [profilesPopUp addItemWithTitle:[profiles objectAtIndex:i]];
+    
+    if (profiles.count>0) {
+        [profileButton setEnabled:true];
+    }
+    
+    [[profilesPopUp menu] addItem:[NSMenuItem separatorItem]];
+    [profilesPopUp addItemWithTitle:[self stringForKey:@"AddUser"]];
+    
+    
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(expansionPortChanged:)
 												 name:@"WiiRemoteExpansionPortChangedNotification"
@@ -84,157 +128,49 @@
 {
 	[[NSAlert alertWithMessageText:[d objectForKey:@"Title"] defaultButton:@"Okay" alternateButton:nil otherButton:nil informativeTextWithFormat:[d objectForKey:@"Message"]] runModal];
 }
+     
+- (NSString*)stringForKey:(NSString *)key {
+    return [NSString stringWithString:[strings objectForKey:key]];
+}
+
+- (NSArray*)getFromStorage {
+    NSString *stringArray = [[NSUserDefaults standardUserDefaults] objectForKey:@"profiles"];
+    if (stringArray.length) {
+        return [stringArray componentsSeparatedByString:@"|"];
+    } else {
+        return [NSArray array];
+    }
+}
+
+- (void)setToStorage:(NSArray *)storeArray {
+    NSMutableString *stringArray = [NSMutableString stringWithCapacity:0];
+    
+    for (int i=0; i < storeArray.count; i++) {
+        [stringArray appendString:[storeArray objectAtIndex:i]];
+        
+        if (i < storeArray.count-1)
+            [stringArray appendString:@"|"];
+    }
+    [[NSUserDefaults standardUserDefaults] setValue:stringArray forKey:@"profiles"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
 
 #pragma mark NSApplication
 
 - (void)applicationWillTerminate:(NSNotification *)notification
 {
+    [self setToStorage:profiles];
 	[wii closeConnection];
 }
 
-#pragma mark Google
-
-- (void)loginGoogleHealth:(id)sender {
-	
-	[ghspinner startAnimation:self];
-	
-	// username/password may change
-	NSString *username = [[NSUserDefaults standardUserDefaults] stringForKey:@"username"];
-	NSString *password = [[NSUserDefaults standardUserDefaults] stringForKey:@"password"];
-	
-	if(username.length && password.length) {
-		
-		[service setUserCredentialsWithUsername:username
-									   password:password];
-		
-		[service fetchFeedWithURL:[[GDataServiceGoogleHealth class] profileListFeedURL]
-						 delegate:self
-				didFinishSelector:@selector(profileListFeedTicket:finishedWithFeed:error:)];
-	}
-}
-
-- (void)profileListFeedTicket:(GDataServiceTicket *)ticket
-             finishedWithFeed:(GDataFeedBase *)feed
-                        error:(NSError *)error {
-	
-	[ghspinner stopAnimation:self];
-		
-	if(!error) {
-		[profiles release];
-		profiles = [feed retain];
-
-		[profilesPopUp removeAllItems];
-		for(GDataEntryHealthProfile* p in [profiles entries])
-			[profilesPopUp addItemWithTitle:[[p title] stringValue]];
-		
-		NSString *profileName = [[NSUserDefaults standardUserDefaults] stringForKey:@"profileName"];
-		if(profileName.length && !![profilesPopUp itemWithTitle:profileName]) {
-			[profilesPopUp selectItemWithTitle:profileName];
-			[self profileChanged:profilesPopUp];
-		}
-		
-	} else {
-		[[NSAlert alertWithError:error] runModal]; // TODO: nicer errors?
-	}
-}
+#pragma mark Profiles
 
 - (IBAction)profileChanged:(id)sender {
-	[[NSUserDefaults standardUserDefaults] setValue:[(NSPopUpButton *)sender titleOfSelectedItem] forKey:@"profileName"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-	
-	[ghspinner startAnimation:self];
-
-	NSString *profileId = [[(GDataEntryHealthProfile *)[[profiles entries] objectAtIndex:[profilesPopUp indexOfSelectedItem]] content] stringValue];
-
-	GDataQueryGoogleHealth *query = [GDataQueryGoogleHealth queryWithFeedURL:[GDataServiceGoogleHealth profileFeedURLForProfileID:profileId]];
-	[query addCategoryFilterWithScheme:nil term:@"LABTEST"];	
-	[query addCategoryFilterWithScheme:kGDataHealthSchemeItem term:@"Height"];
-	[query setIsGrouped:YES];
-	[query setMaxResultsInGroup:1];
-	
-	[service fetchFeedWithQuery:query
-					   delegate:self
-			  didFinishSelector:@selector(profileDetailFeedTicket:finishedWithFeed:error:)];	
-	
-}
-
-- (void)profileDetailFeedTicket:(GDataServiceTicket *)ticket
-			   finishedWithFeed:(GDataFeedBase *)feed
-						  error:(NSError *)error {
-
-	[ghspinner stopAnimation:self];
-	
-	height_cm = 0;
-
-	for(GDataEntryHealthProfile *entry in feed.entries) {
-		
-		// Skip the no_id nodes
-		if(![entry.title.stringValue isEqualToString:@"Height"] || height_cm > 0)
-			continue;
-
-		NSXMLElement *elem = [[[entry continuityOfCareRecord] XMLDocument] rootElement];
-		NSArray *nodes_cm = [elem nodesForXPath:@"/ContinuityOfCareRecord/Body/Results/Result/Test[Description/Text='Height']/TestResult[Units/Unit='centimeters']/Value/text()" error:nil];
-		NSArray *nodes_in = [elem nodesForXPath:@"/ContinuityOfCareRecord/Body/Results/Result/Test[Description/Text='Height']/TestResult[Units/Unit='inches']/Value/text()" error:nil];
-
-		height_cm = ([nodes_cm count] > 0) ? [[[nodes_cm lastObject] XMLString] floatValue] : ([nodes_in count] > 0) ? [[[nodes_in lastObject] XMLString] floatValue] * 2.54 : 0;
-	}
-	
-	if(height_cm > 0) {
-		float height_m_2 = pow(height_cm / 100.0, 2);
-		
-		[weightIndicator setLowCriticalValue:16.5 * height_m_2]; // Min Underweight
-		[weightIndicator setLowWarningValue:18.5 * height_m_2]; // Min Normal
-		[weightIndicator setHighWarningValue:25.0 * height_m_2]; // Max Normal
-		[weightIndicator setHighCriticalValue:30.0 * height_m_2]; // Max Overweight
-		[weightIndicator setMaxValue:40.0 * height_m_2]; // Obese Class III
-	} else {
-		[weightIndicator setLowCriticalValue:0.0];
-		[weightIndicator setLowWarningValue:0.0];
-		[weightIndicator setHighWarningValue:150.0];
-		[weightIndicator setHighCriticalValue:150.0];
-		[weightIndicator setMaxValue:150.0];
-	}
-}
-
-- (void)sendToGoogleHealth:(id)sender {
-	
-	if(!service)
-		[self loginGoogleHealth:self];
-	
-	sentWeight = avgWeight;
-	
-	GDataEntryHealthProfile *entry = [[[GDataEntryHealthProfile alloc] init] autorelease];
-	
-	NSString *format = [NSString stringWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"weight" ofType:@"xml"] encoding:NSUTF8StringEncoding error:nil];
-	NSString *ccr = [NSString stringWithFormat:format,
-					 [[GDataDateTime dateTimeWithDate:[NSDate date] timeZone:[NSTimeZone localTimeZone]] RFC3339String],
-					 sentWeight];	 
-
-	[entry setContinuityOfCareRecord:[[[GDataContinuityOfCareRecord alloc] initWithXMLElement:
-									   [[[NSXMLElement alloc] initWithXMLString:ccr
-																		  error:nil] autorelease] parent:nil] autorelease]];
-	
-	[entry setTitleWithString:@"Weight Update from WiiScale"];
-	
-	[service fetchEntryByInsertingEntry:entry
-							 forFeedURL:[GDataServiceGoogleHealth registerFeedURLForProfileID:[[(GDataEntryHealthProfile *)[[profiles entries] objectAtIndex:[profilesPopUp indexOfSelectedItem]] content] stringValue]]
-							   delegate:self
-					  didFinishSelector:@selector(fetchEntryByInsertingEntry:finishedWithEntry:error:)];	
-}
-
-- (void)fetchEntryByInsertingEntry:(GDataServiceTicket *)ticket
-				 finishedWithEntry:(GDataFeedBase *)feed
-							 error:(NSError *)error {
-	
-	if(!!error)
-	{
-		[[NSAlert alertWithError:error] runModal]; // TODO: nicer error?
-		
-	}
-	else
-	{
-		[mailSent play];
-	}
+	if ([[profilesPopUp selectedItem].title
+          isEqualToString:[self stringForKey:@"AddUser"]]) {
+        [self showPrefs:self];
+    }
+    
 }
 
 #pragma mark Wii Balance Board
@@ -346,7 +282,6 @@
 		if(std_dev < 0.1 && !sent)
 		{
 			sent = YES;
-			[self sendToGoogleHealth:self];
 		}
 		
 	} else {

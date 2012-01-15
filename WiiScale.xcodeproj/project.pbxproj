@@ -8,17 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1DDD58140DA1D0A300B32029 /* MainMenu.xib */; };
+		732E12C514C26ACD00818EF5 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 732E12C414C26ACD00818EF5 /* LICENSE */; };
+		73A97EDD14C27DB100312F8B /* TextStrings.plist in Resources */ = {isa = PBXBuildFile; fileRef = 73A97EDC14C27DB100312F8B /* TextStrings.plist */; };
 		82501D511262C86A00355019 /* PrefsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82501D501262C86A00355019 /* PrefsController.m */; };
 		825226A212626F23002A257A /* WiiScale.icns in Resources */ = {isa = PBXBuildFile; fileRef = 825226A112626F23002A257A /* WiiScale.icns */; };
 		825D9F05108BD2E40009E075 /* WiiRemote.m in Sources */ = {isa = PBXBuildFile; fileRef = 825D9F01108BD2E40009E075 /* WiiRemote.m */; };
 		825D9F06108BD2E40009E075 /* WiiRemoteDiscovery.m in Sources */ = {isa = PBXBuildFile; fileRef = 825D9F03108BD2E40009E075 /* WiiRemoteDiscovery.m */; };
 		825D9F0A108BD2FD0009E075 /* IOBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 825D9F09108BD2FD0009E075 /* IOBluetooth.framework */; };
 		825D9F10108BD33C0009E075 /* AppController.m in Sources */ = {isa = PBXBuildFile; fileRef = 825D9F0F108BD33C0009E075 /* AppController.m */; };
-		825DAA97108C15C70009E075 /* weight.xml in Resources */ = {isa = PBXBuildFile; fileRef = 825DAA96108C15C70009E075 /* weight.xml */; };
 		82673D18129C9EB30067ADE1 /* FPLevelIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 82673D17129C9EB30067ADE1 /* FPLevelIndicator.m */; };
-		82AE8CD41292F616002789A1 /* GData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82AE8B5A1292F4E0002789A1 /* GData.framework */; };
-		82AE8CF31292F764002789A1 /* GData.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 82AE8B5A1292F4E0002789A1 /* GData.framework */; };
-		82CCFE64108ECF2100212CE5 /* mail-sent.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 82CCFE63108ECF2100212CE5 /* mail-sent.aiff */; };
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
@@ -31,7 +29,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				82AE8CF31292F764002789A1 /* GData.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -45,7 +42,9 @@
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
-		32CA4F630368D1EE00C91783 /* GoogleHealthWeight_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoogleHealthWeight_Prefix.pch; sourceTree = "<group>"; };
+		32CA4F630368D1EE00C91783 /* WiiScale_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WiiScale_Prefix.pch; sourceTree = "<group>"; };
+		732E12C414C26ACD00818EF5 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		73A97EDC14C27DB100312F8B /* TextStrings.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = TextStrings.plist; sourceTree = "<group>"; };
 		82501D4F1262C86A00355019 /* PrefsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefsController.h; sourceTree = "<group>"; };
 		82501D501262C86A00355019 /* PrefsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrefsController.m; sourceTree = "<group>"; };
 		825226A112626F23002A257A /* WiiScale.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = WiiScale.icns; sourceTree = "<group>"; };
@@ -58,11 +57,8 @@
 		825D9F09108BD2FD0009E075 /* IOBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOBluetooth.framework; path = /System/Library/Frameworks/IOBluetooth.framework; sourceTree = "<absolute>"; };
 		825D9F0E108BD33C0009E075 /* AppController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppController.h; sourceTree = "<group>"; };
 		825D9F0F108BD33C0009E075 /* AppController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppController.m; sourceTree = "<group>"; };
-		825DAA96108C15C70009E075 /* weight.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = weight.xml; sourceTree = "<group>"; };
 		82673D16129C9EB30067ADE1 /* FPLevelIndicator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPLevelIndicator.h; sourceTree = "<group>"; };
 		82673D17129C9EB30067ADE1 /* FPLevelIndicator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPLevelIndicator.m; sourceTree = "<group>"; };
-		82AE8B5A1292F4E0002789A1 /* GData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GData.framework; path = "../gdata-objectivec-client-read-only/Source/build/Debug/GData.framework"; sourceTree = SOURCE_ROOT; };
-		82CCFE63108ECF2100212CE5 /* mail-sent.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = "mail-sent.aiff"; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* WiiScale.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WiiScale.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -72,7 +68,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				82AE8CD41292F616002789A1 /* GData.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				825D9F0A108BD2FD0009E075 /* IOBluetooth.framework in Frameworks */,
 			);
@@ -97,7 +92,6 @@
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				82AE8B5A1292F4E0002789A1 /* GData.framework */,
 				825D9F09108BD2FD0009E075 /* IOBluetooth.framework */,
 				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
 			);
@@ -138,7 +132,7 @@
 		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
-				32CA4F630368D1EE00C91783 /* GoogleHealthWeight_Prefix.pch */,
+				32CA4F630368D1EE00C91783 /* WiiScale_Prefix.pch */,
 				29B97316FDCFA39411CA2CEA /* main.m */,
 			);
 			name = "Other Sources";
@@ -148,11 +142,11 @@
 			isa = PBXGroup;
 			children = (
 				825226A112626F23002A257A /* WiiScale.icns */,
-				82CCFE63108ECF2100212CE5 /* mail-sent.aiff */,
-				825DAA96108C15C70009E075 /* weight.xml */,
 				8D1107310486CEB800E47090 /* Info.plist */,
 				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
 				1DDD58140DA1D0A300B32029 /* MainMenu.xib */,
+				732E12C414C26ACD00818EF5 /* LICENSE */,
+				73A97EDC14C27DB100312F8B /* TextStrings.plist */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -206,9 +200,16 @@
 /* Begin PBXProject section */
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
-			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "GoogleHealthWeight" */;
+			attributes = {
+				ORGANIZATIONNAME = "Dmitri Amariei";
+			};
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "WiiScale" */;
 			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				en,
+			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* GoogleHealthWeight */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -225,9 +226,9 @@
 			files = (
 				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
 				1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */,
-				825DAA97108C15C70009E075 /* weight.xml in Resources */,
-				82CCFE64108ECF2100212CE5 /* mail-sent.aiff in Resources */,
 				825226A212626F23002A257A /* WiiScale.icns in Resources */,
+				732E12C514C26ACD00818EF5 /* LICENSE in Resources */,
+				73A97EDD14C27DB100312F8B /* TextStrings.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -286,7 +287,7 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = GoogleHealthWeight_Prefix.pch;
+				GCC_PREFIX_HEADER = WiiScale_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				PRODUCT_NAME = WiiScale;
@@ -306,7 +307,7 @@
 				);
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = GoogleHealthWeight_Prefix.pch;
+				GCC_PREFIX_HEADER = WiiScale_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				PRODUCT_NAME = WiiScale;
@@ -316,26 +317,26 @@
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
-				SDKROOT = macosx10.5;
+				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PREBINDING = NO;
-				SDKROOT = macosx10.5;
+				SDKROOT = macosx;
 			};
 			name = Release;
 		};
@@ -351,7 +352,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "GoogleHealthWeight" */ = {
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "WiiScale" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4F08A954540054247B /* Debug */,

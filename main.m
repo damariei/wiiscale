@@ -1,9 +1,9 @@
 //
 //  main.m
-//  GoogleHealthWeight
+//  WiiScale
 //
-//  Created by Ford Parsons on 10/18/09.
-//  Copyright Ford Parsons 2009. All rights reserved.
+//  Created by Dmitri Amariei on 1/14/12.
+//  Copyright (c) 2012 Dmitri Amariei. All rights reserved.
 //
 
 #import <Cocoa/Cocoa.h>
