@@ -276,7 +276,7 @@
 		if(!sent)
 			[status setStringValue:@"Please hold still..."];
 		else
-			[status setStringValue:[NSString stringWithFormat:@"Sent weight of %4.1fkg.  Thanks!", sentWeight]];
+			[status setStringValue:[NSString stringWithFormat:@"Sent weight of %4.1fkg.  Thanks!", avgWeight]];
 
 		
 		if(std_dev < 0.1 && !sent)
