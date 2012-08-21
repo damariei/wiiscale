@@ -562,11 +562,13 @@ float BBInterpolate(unsigned short valRaw, unsigned short val0, unsigned short v
 	// cam: set delegate to nil
 	[_cchan setDelegate:nil];
 	ret = [_cchan closeChannel];
+    [_cchan release];
 	_cchan = nil;
 	LogIOReturn (ret);
 	
 	[_ichan setDelegate:nil];
 	ret = [_ichan closeChannel];
+    [_ichan release];
 	_ichan = nil;
 	LogIOReturn (ret);
 
@@ -1603,7 +1605,9 @@ float BBInterpolate(unsigned short valRaw, unsigned short val0, unsigned short v
 		LogIOReturn (ret);
 		channel = nil;
 		[self closeConnection];
-	}
+	} else {
+        channel = [channel retain];
+    }
 	
 	return channel;
 }
