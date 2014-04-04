@@ -15,3 +15,8 @@ WiiScale is a little Mac app (OS X 10.6+) that connects to your Wii Balance Boar
 #### Future Goals
 - Connect to different online services
 - Set user goals and enable easy tracking
+- 
+
+#### Download link
+
+- [WiiScale for OS X](http://snosrap.com/wiiscale)
