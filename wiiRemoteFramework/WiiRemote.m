@@ -9,7 +9,7 @@
 #import "WiiRemote.h"
 #include <unistd.h>
 
-static void NSLogDebugBlock(NSString *prompt, unsigned dataLength, unsigned char *dp) {
+static void NSLogBlock(NSString *prompt, unsigned dataLength, unsigned char *dp) {
 #if DEBUG
 	printf ("\n%s %3d:\n", [prompt UTF8String], dataLength);
 	int i;
@@ -119,7 +119,7 @@ float BBInterpolate(unsigned short valRaw, unsigned short val0, unsigned short v
 {
 	self = [super init];
 	
-	NSLogDebug (@"Wii instantiated");
+	NSLog (@"Wii instantiated");
 
 	if (self != nil) {
 		accX = 0x10;
@@ -155,7 +155,7 @@ float BBInterpolate(unsigned short valRaw, unsigned short val0, unsigned short v
 
 - (void) dealloc
 {
-	NSLogDebug (@"Wii released");
+	NSLog (@"Wii released");
 	[super dealloc];
 }
 
@@ -218,13 +218,13 @@ float BBInterpolate(unsigned short valRaw, unsigned short val0, unsigned short v
 		_opened = NO;
 		[self closeConnection];
 	}
-	NSLogDebug(@"connectTo returns:%d", ret);
+	NSLog(@"connectTo returns:%d", ret);
 	return ret;
 }
 
 - (void) disconnected:(IOBluetoothUserNotification*) note fromDevice:(IOBluetoothDevice*) device
 {
-	NSLogDebug (@"Disconnected.");
+	NSLog (@"Disconnected.");
 	if (device == _wiiDevice) {
 //		_cchan = nil;
 //		_ichan = nil;
@@ -247,7 +247,7 @@ float BBInterpolate(unsigned short valRaw, unsigned short val0, unsigned short v
 //		printf(" %02X", buf[i]);
 //	}
 //	printf("\n");
-	NSLogDebugBlock(@"send:", length, buf);
+	NSLogBlock(@"send:", length, buf);
 	
 	IOReturn ret = kIOReturnSuccess;
 	
@@ -257,7 +257,7 @@ float BBInterpolate(unsigned short valRaw, unsigned short val0, unsigned short v
 	for (i=0; i<6 ; i++) {
 		ret = [_cchan writeSync:buf length:length];		
 		if (ret != kIOReturnSuccess) {
-			NSLogDebug(@"Write Error for command 0x%x:", buf[1], ret);		
+			NSLog(@"Write Error for command 0x%x:", buf[1], ret);
 			LogIOReturn (ret);
 //			[self closeConnection];
 			usleep (10000);
@@ -285,9 +285,9 @@ float BBInterpolate(unsigned short valRaw, unsigned short val0, unsigned short v
 		return;
 	}
 	if (enabled) {
-		NSLogDebug (@"Set motion sensor enabled");
+		NSLog (@"Set motion sensor enabled");
 	} else {
-		NSLogDebug (@"Set motion sensor disabled");
+		NSLog (@"Set motion sensor disabled");
 	}
 
 	// this variable indicate a desire, and should be updated regardless of the sucess of sending the command
@@ -344,7 +344,7 @@ float BBInterpolate(unsigned short valRaw, unsigned short val0, unsigned short v
 
 	_shouldUpdateReportMode = NO;
 
-	NSLogDebug (@"Updating Report Mode");
+	NSLog (@"Updating Report Mode");
 	// Set the report type the Wiimote should send.
 	unsigned char cmd[] = {0x12, 0x02, 0x30}; // Just buttons.
 	
@@ -379,7 +379,7 @@ float BBInterpolate(unsigned short valRaw, unsigned short val0, unsigned short v
 		wiiIRMode = _isExpansionPortEnabled ? kWiiIRModeBasic : kWiiIRModeExtended;
 		
 		// Set IR Mode
-		//		NSLogDebug (@"Setting IR Mode to finish initialization.");
+		//		NSLog (@"Setting IR Mode to finish initialization.");
 		// I don't think it should be here ...		
 		[self writeData:(darr){ wiiIRMode } at:0x04B00033 length:1];
 		usleep(10000);
@@ -403,9 +403,9 @@ float BBInterpolate(unsigned short valRaw, unsigned short val0, unsigned short v
 	IOReturn ret = kIOReturnSuccess;
 	
 	if (enabled)
-		NSLogDebug (@"Enabling expansion port.");
+		NSLog (@"Enabling expansion port.");
 	else
-		NSLogDebug (@"Disabling expansion port.");	
+		NSLog (@"Disabling expansion port.");
 
 	if (_isExpansionPortAttached) {
 		_isExpansionPortEnabled = enabled;
@@ -455,7 +455,7 @@ float BBInterpolate(unsigned short valRaw, unsigned short val0, unsigned short v
 	usleep(10000);
 
 	if (_isIRSensorEnabled) {
-		NSLogDebug (@"Enabling IR Sensor");
+		NSLog (@"Enabling IR Sensor");
 		
 		// based on marcan's method, found on wiili wiki:
 		// tweaked to include some aspects of cliff's setup procedure in the hopes
@@ -483,7 +483,7 @@ float BBInterpolate(unsigned short valRaw, unsigned short val0, unsigned short v
 		usleep(10000);
 		
 		if (ret != kIOReturnSuccess) {
-			NSLogDebug (@"Set IR Enabled failed, closing connection");
+			NSLog (@"Set IR Enabled failed, closing connection");
 //			[self closeConnection];
 			_isIRSensorEnabled = NO;
 			return;
@@ -586,7 +586,7 @@ float BBInterpolate(unsigned short valRaw, unsigned short val0, unsigned short v
 
 - (void) handleWriteResponse:(unsigned char *) dp length:(size_t) dataLength
 {
-	NSLogDebug (@"Write data response: %00x %00x %00x %00x", dp[2], dp[3], dp[4], dp[5]);
+	NSLog (@"Write data response: %00x %00x %00x %00x", dp[2], dp[3], dp[4], dp[5]);
 }
 
 
@@ -615,7 +615,7 @@ float BBInterpolate(unsigned short valRaw, unsigned short val0, unsigned short v
 	}**/
 
 	unsigned short addr = (dp[5] * 256) + dp[6];
-	NSLogDebug (@"handleRAMData (0x21) addr=0x%x", addr);
+	NSLog (@"handleRAMData (0x21) addr=0x%x", addr);
 	
 	//mii data
 	if ((dataLength >= 20) && (addr >= WIIMOTE_MII_DATA_BEGIN_ADDR) && (addr <= WIIMOTE_MII_CHECKSUM1_ADDR)) { 
@@ -631,32 +631,32 @@ float BBInterpolate(unsigned short valRaw, unsigned short val0, unsigned short v
 
 	// specify attached expasion device
 	if (addr == 0x00F0) {
-		NSLogDebug (@"Expansion device connected.");
+		NSLog (@"Expansion device connected.");
 		
 		switch (WII_DECRYPT(dp[21])) {
 			case 0x00:
-				NSLogDebug (@"Nunchuk connected.");
+				NSLog (@"Nunchuk connected.");
 				if (expType != WiiNunchuk) {
 					expType = WiiNunchuk;
 					[[NSNotificationCenter defaultCenter] postNotificationName:WiiRemoteExpansionPortChangedNotification object:self];
 				}
 				break;
 			case 0x01:
-				NSLogDebug (@"Classic controller connected.");
+				NSLog (@"Classic controller connected.");
 				if (expType != WiiClassicController) {
 					expType = WiiClassicController;
 					[[NSNotificationCenter defaultCenter] postNotificationName:WiiRemoteExpansionPortChangedNotification object:self];				
 				}
 				break;
 			case 0x2A:
-				NSLogDebug (@"Balance Beam connected.");
+				NSLog (@"Balance Beam connected.");
 				if (expType != WiiBalanceBeam) {
 					expType = WiiBalanceBeam;
 					[[NSNotificationCenter defaultCenter] postNotificationName:WiiRemoteExpansionPortChangedNotification object:self];				
 				}
 				break;
 			default:
-				NSLogDebug (@"Unknown device connected (0x%x). ", WII_DECRYPT(dp[21]));
+				NSLog (@"Unknown device connected (0x%x). ", WII_DECRYPT(dp[21]));
 				expType = WiiExpNotAttached;
 				break;
 		}
@@ -666,7 +666,7 @@ float BBInterpolate(unsigned short valRaw, unsigned short val0, unsigned short v
 		
 	// wiimote calibration data
 	if (!_shouldReadExpansionCalibration && (addr == 0x0020)) {
-		NSLogDebug (@"Read Wii calibration");
+		NSLog (@"Read Wii calibration");
 		wiiCalibData.accX_zero = dp[7] << 1;
 		wiiCalibData.accY_zero = dp[8] << 1;
 		wiiCalibData.accZ_zero = dp[9] << 1;
@@ -685,7 +685,7 @@ float BBInterpolate(unsigned short valRaw, unsigned short val0, unsigned short v
 		balanceBeamCalibData.quad[2].bottomRight = ((unsigned short) dp[13] << 8) | dp[14];
 		balanceBeamCalibData.quad[2].topLeft = ((unsigned short) dp[15] << 8) | dp[16];
 		balanceBeamCalibData.quad[2].bottomLeft = ((unsigned short) dp[17] << 8) | dp[18];
-		NSLogDebug(@"{%d %d %d %d} {%d %d %d %d} {%d %d %d %d}", 
+		NSLog(@"{%d %d %d %d} {%d %d %d %d} {%d %d %d %d}",
 			balanceBeamCalibData.quad[0].topRight, 
 			balanceBeamCalibData.quad[0].bottomRight, 
 			balanceBeamCalibData.quad[0].topLeft, 
@@ -708,14 +708,14 @@ float BBInterpolate(unsigned short valRaw, unsigned short val0, unsigned short v
 	}
 	if (_shouldReadExpansionCalibration) {
 		if (expType == WiiBalanceBeam && addr == 0x0024) {
-			NSLogDebugBlock(@"calib", dataLength, dp);
+			NSLogBlock(@"calib", dataLength, dp);
 			balanceBeamCalibData.quad[0].topRight = ((unsigned short) dp[7] << 8) | dp[8];
 			balanceBeamCalibData.quad[0].bottomRight = ((unsigned short) dp[9] << 8) | dp[10];
 			balanceBeamCalibData.quad[0].topLeft = ((unsigned short) dp[11] << 8) | dp[12];
 			balanceBeamCalibData.quad[0].bottomLeft = ((unsigned short) dp[13] << 8) | dp[14];
 			balanceBeamCalibData.quad[1].topRight = ((unsigned short) dp[15] << 8) | dp[16];
 			balanceBeamCalibData.quad[1].bottomRight = ((unsigned short) dp[17] << 8) | dp[18];
-			NSLogDebug(@"{%d %d %d %d}", 
+			NSLog(@"{%d %d %d %d}",
 					   balanceBeamCalibData.quad[0].topRight, 
 					   balanceBeamCalibData.quad[0].bottomRight, 
 					   balanceBeamCalibData.quad[0].topLeft, 
@@ -727,7 +727,7 @@ float BBInterpolate(unsigned short valRaw, unsigned short val0, unsigned short v
 			return;
 		} else if (addr == 0x0020) {
 			if (expType == WiiNunchuk) {
-				NSLogDebug (@"Read nunchuk calibration");
+				NSLog (@"Read nunchuk calibration");
 				//nunchuk calibration data
 				nunchukCalibData.accX_zero =  WII_DECRYPT(dp[7]);
 				nunchukCalibData.accY_zero =  WII_DECRYPT(dp[8]);
@@ -760,7 +760,7 @@ float BBInterpolate(unsigned short valRaw, unsigned short val0, unsigned short v
 
 - (void) handleStatusReport:(unsigned char *) dp length:(size_t) dataLength
 {
-	NSLogDebug (@"Status Report (0x%x)", dp[4]);
+	NSLog (@"Status Report (0x%x)", dp[4]);
 		
 	double level = (double) dp[7];
 	level /= (double) 0xC0; // C0 = fully charged.
@@ -776,14 +776,14 @@ float BBInterpolate(unsigned short valRaw, unsigned short val0, unsigned short v
 		
 	IOReturn ret = kIOReturnSuccess;
 	if (dp[4] & 0x02) { //some device attached to Wiimote
-		NSLogDebug (@"Device Attached");
+		NSLog (@"Device Attached");
 		if (!_isExpansionPortAttached) {
       usleep (10000); // balance beam needs the time.
 			ret = [self writeData:(darr){0x00} at:(unsigned long)0x04A40040 length:1]; // Initialize the device
 			usleep (10000);
 
 			if (ret != kIOReturnSuccess) {
-				NSLogDebug (@"Problem occured while initializing the expansion port.");
+				NSLog (@"Problem occured while initializing the expansion port.");
 				LogIOReturn (ret);
 				return;
 			}
@@ -794,15 +794,15 @@ float BBInterpolate(unsigned short valRaw, unsigned short val0, unsigned short v
 			_isExpansionPortAttached = (ret == kIOReturnSuccess);
 			
 			if (ret == kIOReturnSuccess) {
-				NSLogDebug (@"Expansion Device initialized");
+				NSLog (@"Expansion Device initialized");
 			} else
-				NSLogDebug (@"Failed to initialize Expansion Device");
+				NSLog (@"Failed to initialize Expansion Device");
 			
 			return;
 		}
 	} else { // unplugged
 		if (_isExpansionPortAttached) {
-			NSLogDebug (@"Device Detached");
+			NSLog (@"Device Detached");
 			_isExpansionPortAttached = NO;
 			expType = WiiExpNotAttached;
 
@@ -834,7 +834,7 @@ float BBInterpolate(unsigned short valRaw, unsigned short val0, unsigned short v
 			startByte = 17;
 			break;
 		default:
-			NSLogDebug (@"Unsupported Report mode for extension data.");
+			NSLog (@"Unsupported Report mode for extension data.");
 			return; // This shouldn't ever happen.
 	}
 	
@@ -940,7 +940,7 @@ float BBInterpolate(unsigned short valRaw, unsigned short val0, unsigned short v
 		}
 	}
 
-//	NSLogDebug (@"IR Data (%i, %i, %i) (%i, %i, %i) (%i, %i, %i) (%i, %i, %i)",
+//	NSLog (@"IR Data (%i, %i, %i) (%i, %i, %i) (%i, %i, %i) (%i, %i, %i)",
 //		  irData[0].x, irData[0].y, irData[0].s,
 //		  irData[1].x, irData[1].y, irData[1].s,
 //		  irData[2].x, irData[2].y, irData[2].s,
@@ -961,7 +961,7 @@ float BBInterpolate(unsigned short valRaw, unsigned short val0, unsigned short v
 		}
 	}
 	
-//	NSLogDebug (@"p1=%i ; p2=%i", p1, p2);
+//	NSLog (@"p1=%i ; p2=%i", p1, p2);
 
 	double ox, oy;
 	if ((p1 > -1) && (p2 > -1)) {
@@ -1458,7 +1458,7 @@ float BBInterpolate(unsigned short valRaw, unsigned short val0, unsigned short v
 	unsigned char cmd[] = {0x15, 0x00};
 	IOReturn ret = [self sendCommand:cmd length:2];
 	if (ret != kIOReturnSuccess)
-		NSLogDebug (@"getCurrentStatus: failed.");
+		NSLog (@"getCurrentStatus: failed.");
 	
 	return ret;
 }
@@ -1504,27 +1504,27 @@ float BBInterpolate(unsigned short valRaw, unsigned short val0, unsigned short v
 
 - (void) l2capChannelReconfigured:(IOBluetoothL2CAPChannel*) l2capChannel
 {
-      NSLogDebug (@"l2capChannelReconfigured");
+      NSLog (@"l2capChannelReconfigured");
 }
 
 - (void) l2capChannelWriteComplete:(IOBluetoothL2CAPChannel*) l2capChannel refcon:(void*) refcon status:(IOReturn) error
 {
-      NSLogDebug (@"l2capChannelWriteComplete");
+      NSLog (@"l2capChannelWriteComplete");
 }
 
 - (void) l2capChannelQueueSpaceAvailable:(IOBluetoothL2CAPChannel*) l2capChannel
 {
-      NSLogDebug (@"l2capChannelQueueSpaceAvailable");
+      NSLog (@"l2capChannelQueueSpaceAvailable");
 }
 
 - (void) l2capChannelOpenComplete:(IOBluetoothL2CAPChannel*) l2capChannel status:(IOReturn) error
 {
-	NSLogDebug (@"l2capChannelOpenComplete (PSM:0x%x)", [l2capChannel getPSM]);
+	NSLog (@"l2capChannelOpenComplete (PSM:0x%x)", [l2capChannel getPSM]);
 }
 
 - (void) l2capChannelClosed:(IOBluetoothL2CAPChannel*) l2capChannel
 {
-	NSLogDebug (@"l2capChannelClosed (PSM:0x%x)", [l2capChannel getPSM]);
+	NSLog (@"l2capChannelClosed (PSM:0x%x)", [l2capChannel getPSM]);
 
 	if (l2capChannel == _cchan)
 		_cchan = nil;
@@ -1546,7 +1546,7 @@ float BBInterpolate(unsigned short valRaw, unsigned short val0, unsigned short v
 	unsigned char * dp = (unsigned char *) dataPointer;
 	
 /*	if (_dump) {
-		NSLogDebug (@"Dumping: 0x%x", dp[1]);
+		NSLog (@"Dumping: 0x%x", dp[1]);
 		Debugger();
 	}*/
 
@@ -1576,13 +1576,13 @@ float BBInterpolate(unsigned short valRaw, unsigned short val0, unsigned short v
       [self doUpdateReportMode];
       
       if (ret != kIOReturnSuccess) {
-        NSLogDebug (@"Can't update report mode after two retries, bailing out.");
+        NSLog (@"Can't update report mode after two retries, bailing out.");
         [self closeConnection];
         return;
       }
     }
   }
-//	NSLogDebug (@"Unhandled data received: 0x%x", dp[1]);
+//	NSLog (@"Unhandled data received: 0x%x", dp[1]);
 	//if (nil != _delegate)
 		//[_delegate dataChanged:buttonData accX:accX accY:accY accZ:accZ mouseX:ox mouseY:oy];
 	//[_delegate dataChanged:buttonData accX:irData[0].x/4 accY:irData[0].y/3 accZ:irData[0].s*16];
@@ -1598,10 +1598,10 @@ float BBInterpolate(unsigned short valRaw, unsigned short val0, unsigned short v
 	IOBluetoothL2CAPChannel * channel = nil;
 	IOReturn ret = kIOReturnSuccess;
 	
-	NSLogDebug(@"Open channel (PSM:%i) ...", psm);
+	NSLog(@"Open channel (PSM:%i) ...", psm);
 	if ((ret = [_wiiDevice openL2CAPChannelSync:&channel withPSM:psm delegate:delegate]) != kIOReturnSuccess) {
 //	if ((ret = [_wiiDevice openL2CAPChannel:psm findExisting:NO newChannel:&channel]) != kIOReturnSuccess) {
-		NSLogDebug (@"Could not open L2CAP channel (psm:%i)", psm);
+		NSLog (@"Could not open L2CAP channel (psm:%i)", psm);
 		LogIOReturn (ret);
 		channel = nil;
 		[self closeConnection];

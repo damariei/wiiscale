@@ -20,7 +20,8 @@
 		// cam: calling IOBluetoothLocalDeviceAvailable has two advantages:
 		// 1. it sets up a event source in the run loop (bug for C version of the bluetooth api )
 		// 2. it checks for the availability of the BT hardware
-		if (!IOBluetoothLocalDeviceAvailable ())
+        
+		if (false)
 		{
 			[self release];
 			self = nil;
@@ -40,7 +41,7 @@
 
 - (void) dealloc
 {	
-	NSLogDebug (@"Wiimote Discovery released");
+	NSLog (@"Wiimote Discovery released");
 	[super dealloc];
 }
 
@@ -60,7 +61,7 @@
 {
 	// cam: check everytime the presence of the bluetooth hardware,
 	// we don't know if the user has not turned it off meanwhile
-	if (!IOBluetoothLocalDeviceAvailable ())
+	if (false)
 		return kIOReturnNotAttached;
 	
 	// if we are currently discovering, we can't start a new discovery right now.
@@ -81,7 +82,8 @@
 	// the returned inquiry is autoreleased, we will have to retain it if we decide to keep it
 	_inquiry = [IOBluetoothDeviceInquiry inquiryWithDelegate:self];
 	[_inquiry setInquiryLength:20];
-	[_inquiry setSearchCriteria:kBluetoothServiceClassMajorAny majorDeviceClass:0x05 minorDeviceClass:0x01];
+    [_inquiry setSearchType:kIOBluetoothDeviceSearchClassic];
+	//[_inquiry setSearchCriteria:kBluetoothServiceClassMajorAny majorDeviceClass:0x05 minorDeviceClass:0x01];
 	[_inquiry setUpdateNewDeviceNames:NO];
 
 	IOReturn status = [_inquiry start];
@@ -114,7 +116,7 @@
 	[_inquiry release];
 	_inquiry = nil;
 	
-	NSLogDebug (@"Discovery closed");
+	NSLog (@"Discovery closed");
 	return ret;
 }
 

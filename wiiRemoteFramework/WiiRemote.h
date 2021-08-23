@@ -13,12 +13,12 @@
 #import <IOBluetooth/objc/IOBluetoothL2CAPChannel.h>
 
 // useful logging macros
-#ifndef NSLogDebug
+#ifndef NSLog
 #if DEBUG
-#	define NSLogDebug(log, ...) NSLog(log, ##__VA_ARGS__)
+#	define NSLog(log, ...) NSLog(log, ##__VA_ARGS__)
 #	define LogIOReturn(result) if (result != kIOReturnSuccess) { printf ("IOReturn error (%s [%d]): system 0x%x, sub 0x%x, error 0x%x\n", __FILE__, __LINE__, err_get_system (result), err_get_sub (result), err_get_code (result)); }
 #else
-#	define NSLogDebug(log, ...)
+#	define NSLog(log, ...)
 #	define LogIOReturn(result)
 #endif
 #endif
